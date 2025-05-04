@@ -1,23 +1,46 @@
+# name: Docker Build
+
+# on:
+#   push:
+#     branches: [master]
+
+# jobs:
+#   build-and-push:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+      
+#       - name: Login to Docker Hub
+#         uses: docker/login-action@v2
+#         with:
+#           username: ${{ secrets.DOCKER_HUB_USERNAME }}
+#           password: ${{ secrets.DOCKER_HUB_TOKEN }}
+      
+#       - name: Build and push
+#         uses: docker/build-push-action@v4
+#         with:
+#           push: true
+#           tags: dawsonkesson/devops-portfolio:latest
+
 name: Docker Build
 
-on:
-  push:
-    branches: [master]
+on: [push]
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      DOCKER_USER: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_PASS: ${{ secrets.DOCKER_HUB_PASSWORD }}
+    
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-      
+        run: |
+          echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
       - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          push: true
-          tags: dawsonkesson/devops-portfolio:latest
+        run: |
+          docker build -t dawsonkesson/devops-portfolio .
+          docker push dawsonkesson/devops-portfolio
