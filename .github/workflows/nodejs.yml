@@ -1,24 +1,80 @@
+# name: Node.js CI
+
+# on:
+#   push:
+#     branches: [ "master" ]
+#   pull_request:
+#     branches: [ "master" ]
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     strategy:
+#       matrix:
+#         node-version: [18.x]
+
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Use Node.js ${{ matrix.node-version }}
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: ${{ matrix.node-version }}
+#       - run: npm install
+#       - run: npm test
+
+
+# name: Node.js CI
+
+# on:
+#   push:
+#     branches: ["master"]
+#   pull_request:
+#     branches: ["master"]
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     strategy:
+#       matrix:
+#         node-version: [18.x]
+
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Use Node.js ${{ matrix.node-version }}
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: ${{ matrix.node-version }}
+#       - run: npm install
+#       # - run: npm test  # ← Commented out
+#       - run: echo "✅ Build succeeded (tests skipped)"
+
 name: Node.js CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x]
-
+    
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm install
-      - run: npm test
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Run tests
+      run: npm test
+      
+    - name: Verify server starts
+      run: npm start & sleep 5 && curl -s http://localhost:3000 | grep "Hello, DevOps World!"
